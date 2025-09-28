@@ -1,0 +1,206 @@
+var settings = import MyScripts/settings
+
+func isFarmExp()
+  return settings.farm_mode = "exp"
+
+func isFarmKi()
+  return settings.farm_mode = "ki"
+
+/**
+ * Ability activation
+ **/
+
+func isUsingSkill()
+  return (item.right = bardiche & item.right.state = 2)
+    ^| (item.right = heavy_hammer & item.right.state = 2)
+
+func canBardiche()
+  return item.GetCooldown("bardiche") <= 0 & item.CanActivate()
+
+func canHeavyHammer()
+  return item.GetCooldown("heavy_hammer") <= 0 & item.CanActivate()
+
+func activateBardiche()
+  equip bardiche
+  activate R
+
+func activateHeavyHammer()
+  equip heavy_hammer
+  activate R
+
+func tryAblities()
+  ?foe.armor > 0
+    ?canHeavyHammer()
+      activateHeavyHammer()
+      return true
+  :
+    ?canBardiche()
+      activateBardiche()
+      return true
+  return false
+
+/**
+ * Conditional logics
+ **/
+
+func equipFarm()
+  equipL xp_stone
+  equipR xi_stone
+
+func equipWalk()
+  ?foe.distance > 23
+    ?hp < maxhp 
+      equipL ouroboros
+      equipR compound shield
+    :
+      equipL triskelion
+      equipR compound shield
+
+func equipSpeed()
+  ?isUsingSkill()
+    return
+  ?foe.distance > 9
+    equipR dashing shield
+    ?item.GetCooldown("bash") <= 0
+      equipR bashing shield
+  :
+    equipBestLongSword("R")
+  ?hp < maxhp
+    equipL vigor sword dL
+  :
+    equipBestSword("L")
+
+
+func equipGeneral()
+  ?isUsingSkill()
+    return
+  ?isFarmExp()
+    equipR xp_stone
+  :?isFarmKi()
+    equipR xi_stone // seems a typo from dev
+  :
+    equipBestShield()
+  ?foe.distance <= 7
+    equipMelee("L")
+  :
+    equipRanged("L")
+
+func equipMelee(dir)
+  ?foe = immune_to_physical
+    equipBestStaff()
+  :?foe = magic_vulnerability
+    equipBestStaff()
+  :?foe.GetCount(7) >= 2
+    equipBestLongSword(dir)
+    ?foe.GetCount(7) > 2 & canHeavyHammer()
+      activateHeavyHammer()
+  :?foe.armor > 0
+    equipBestHammer(dir)
+    ?foe = bronze_guardian | foe = mine_walker
+      ?canHeavyHammer()
+        activateHeavyHammer()
+  :
+    equipBestSword(dir)
+    ?foe.hp > 100 & canBardiche()
+      activateBardiche()
+
+func equipRanged(dir)
+  var can_crossbow = true
+  var can_wand = true
+  ?foe = immune_to_ranged
+    equipMelee(dir)
+    return
+  ?foe = immune_to_physical
+    can_crossbow = false
+  ?foe = magic_resist
+    can_wand = false
+  // ?foe = magic_vulnerability
+  ?foe.count >= 2
+    ?can_crossbow | !can_wand
+      equipBestSocketedCrossbow()
+    :
+      equipBestWand(dir)
+  :
+    ?can_crossbow
+      ?foe = stone
+        equipBestCrossbow(dir)
+      :
+        equipBestSocketedCrossbow()
+    :
+      equipBestWand(dir)
+
+/**
+ * Weapons
+ **/
+
+func equipBestSword(dir)
+  equipBy(dir, "sword -long")
+  equipBestElement(dir, "sword -long")
+
+func equipBestLongSword(dir)
+  equipBy(dir, socketed long sword)
+  equipBestElement(dir, socketed long sword)
+
+func equipBestHammer(dir)
+  equipBy(dir, hammer)
+  equipBestElement(dir, hammer)
+
+func equipBestCrossbow(dir) // or directly use equip
+  equipBy(dir, crossbow)
+
+func equipBestSocketedCrossbow()
+  equip socketed crossbow
+  ?foe = ice
+    ?foe.debuffs.GetCount("dot") > 0
+      equipBestElement("D", socketed crossbow D)
+    :
+      equipBestElement("D", socketed crossbow d)
+  :
+    equipBestElement("D", socketed crossbow)
+
+func equipBestStaff()
+  equip socketed staff
+  equipBestElement("D", socketed staff)
+
+func equipBestWand(dir)
+  equipBy(dir, wand)
+  equipBestElement(dir, wand)
+
+func equipBestShield()
+  equipR shield
+  equipR compound shield
+  equipBestElement(dir, shield)
+  // ?hp < maxhp
+  //   equipR vigor shield dh
+
+func equipBestElement(dir, keywords)
+  equipBy(dir, ice + " " + keywords)
+  equipBy(dir, fire + " " + keywords)
+  equipBy(dir, aether + " " + keywords)
+  equipBy(dir, poison + " " + keywords)
+  equipBy(dir, vigor + " " + keywords)
+  ?foe = poison
+    equipBy(dir, ice + " " + keywords)
+  :?foe = ice
+    equipBy(dir, fire + " " + keywords)
+  :?foe = fire
+    equipBy(dir, aether + " " + keywords)
+  :?foe = aether
+    equipBy(dir, vigor + " " + keywords)
+  :?foe = vigor
+    equipBy(dir, poison + " " + keywords)
+
+func equipBy(dir, keywords)
+  ?dir = "L"
+    ?item.left.state = 3
+      equipL *0 wand
+    equipL @keywords@
+  :?dir = "R"
+    ?item.right.state = 3
+      equipR *0 wand
+    equipR @keywords@
+  :
+    ?item.right.state = 3
+      equipR *0 wand
+    equip @keywords@
+

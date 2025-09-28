@@ -1,0 +1,90 @@
+var lc = import MyScripts/locheck
+var rsc = import MyScripts/resources
+var eq = import MyScripts/equips
+
+?lc.isRidge()
+  ?hp < 10
+    activate potion
+  eq.equipWalk()
+  ?loc.stars <= 5
+    equipL triskelion
+  rsc.pickups()
+  rsc.harvests()
+
+  ?foe.distance < 23 | foe = boss 
+    ?foe = boss | foe = ice_wall
+      equipBoss()
+    :
+      ?foe = ice pillar
+        equipR aether long sword dU
+        equipL aether sword -long dU
+      :
+        ?loc.stars <= 5
+          eq.equipSpeed()
+        :
+          eq.equipGeneral()
+
+  ?foe = boss
+    ?foe.state = 32
+      ?foe = phase1
+        ?loc.stars <= 5
+          ?foe.time = 120
+            equipR mind stone
+        :
+          ?foe.time = 65
+            equipR mind stone
+      // :
+      //   ?foe.time = 15
+      //     equipR mind stone
+    :?foe.state = 4
+      eq.equipFarm()
+
+func equipBoss()
+  ?loc.stars < 6
+    ?foe = boss
+      ?foe.distance > 5
+        equipR dashing shield
+        equipL sword
+        return
+      ?foe.distance > 2
+        equip shovel
+        return
+    :
+      equipR aether long sword dU
+      equipL aether -long sword dU
+      return
+    var maxLayer = 1
+    ?foe = boss
+      maxLayer = 1
+    ?foe.debuffs.string ! dot
+      equip fire socketed crossbow dF
+    :
+      ?hp < maxhp
+        equipL vigor sword
+        equipR vigor wand
+      :
+        equipL fire sword -long D
+        ?armor < 10
+          ?item.right.state ! 2
+            equipR compound shield
+        :
+          equipR fire sword -long dF
+  :?loc.stars < 11
+    ?foe = boss
+      ?foe.distance > 5
+        equipR dashing shield
+        equipL sword
+        return
+    :
+      equipR aether long sword dU
+      equipL aether -long sword dU
+      return
+      // ?true
+    ?foe.debuffs.string ! dot
+      equip fire socketed crossbow dF
+    :
+      equipR vigor shield ah
+      ?hp < maxhp
+        equipL vigor sword dL -long
+      :
+        equipL fire sword -long D

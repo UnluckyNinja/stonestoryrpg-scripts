@@ -1,0 +1,23 @@
+func isRocky()
+  return loc.id = rocky_plateau
+
+func isWoods()
+  return loc.id = deadwood_valley
+
+func isCave()
+  return loc.id = caustic_caves
+
+func isFungus()
+  return loc.id = fungus_forest
+
+func isCrypt()
+  return loc.id = undead_crypt
+
+func isMine()
+  return loc = bronze_mine
+
+func isRidge()
+  return loc.id = icy_ridge
+
+func isTemple()
+  return loc = temple

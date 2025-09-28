@@ -1,0 +1,6 @@
+var enable_harvest = true
+var debug = true
+var farm_mode = "none" // exp / ki / none
+
+func isDebug()
+  return debug

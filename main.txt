@@ -1,0 +1,54 @@
+var settings = import MyScripts/settings
+settings.enable_harvest = false
+settings.farm_mode = "none"
+settings.debug = true
+
+import MyScripts/level_rocky
+import MyScripts/level_woods
+import MyScripts/level_caves
+import MyScripts/level_fungus
+import MyScripts/level_crypt
+import MyScripts/level_mine
+import MyScripts/level_ridge
+import MyScripts/level_temple
+
+?input.y = 0
+  ?input.x = 0
+    debugLoc()
+  :?input.x = 1
+    debugEnemy()
+  :?input.x = 2
+    debugItem()
+?loc = Waterfall
+  debugItem()
+
+// ?loc = Waterfall
+//   equip fire socketed crossbow D
+
+func debugLoc()
+  >`0,1,@loc@
+  ?harvest
+    >`0,2,@harvest@,@harvest.distance@,@harvest.z@
+  ?pickup
+    >`0,2,@pickup@,@pickup.distance@,@pickup.z@
+
+func debugEnemy()
+  ?foe
+    >`0,3,@foe@ 
+    >`0,4,ID,Name: @foe.id@, @foe.name@
+    >`0,5,Distance: @foe.distance@
+    >`0,6,Buffs string: @foe.buffs.string@
+    >`0,7,Debuffs string: @foe.debuffs.string@
+    >`0,8,State: @foe.state@
+    >`0,9,Frame: @foe.time@
+    >`0,10,level: @foe.level@, @foe.hp@/@foe.maxhp@
+
+func debugItem()
+  >`0,11,Left:@item.left@
+  >`0,12,  State:@item.left.state@
+  >`0,13,  Time:@item.left.time@
+  >`0,14,Right:@item.right@
+  >`0,15,  State:@item.right.state@
+  >`0,16,  Time:@item.right.time@
+  >`0,17,Bardiche: @item.GetCooldown("bardiche")@
+  >`0,18,Heavy Hammer:@item.GetCooldown("heavy_hammer")@

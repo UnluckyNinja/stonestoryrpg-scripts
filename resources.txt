@@ -1,0 +1,14 @@
+var settings = import MyScripts/settings
+
+func pickups()
+  ?pickup.distance < 7
+    equipL star
+
+func harvests()
+  ?settings.enable_harvest
+    ?harvest.distance < 7
+      ?harvest = Boulder
+        equip shovel
+      :
+        equipL moon stone
+        equipR hatchet

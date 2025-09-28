@@ -1,0 +1,51 @@
+var lc = import MyScripts/locheck
+var rsc = import MyScripts/resources
+var eq = import MyScripts/equips
+
+var attack_counter = 0
+
+?lc.isRocky()
+  ?hp < 10
+    activate potion
+  eq.equipWalk()
+  rsc.pickups()
+  rsc.harvests()
+
+  ?foe.distance < 30 
+    ?foe = boss
+      equipBoss()
+    :
+      // ?foe = ant
+      //   equipL long sword
+      //   equipR poison shield
+      // :
+      eq.equipGeneral()
+  ?foe.state = 124
+    attack_counter = 0
+  ?foe = boss
+    ?foe = phase3
+      ?foe.state = 115
+        ?foe.time = 70
+          equipR mind stone
+  ?foe.state = 4
+    eq.equipFarm()
+
+func equipBoss()
+  equipR compound shield *5
+  ?foe = phase1
+    ?hp < maxhp
+      equipL vigor sword
+    :
+      equipL poison sword
+    equipR aether sword D
+  ?foe = phase2
+      eq.equipBestSword("L")
+      equipR vigor sword
+      ?!item.left
+        equipL poison sword
+  ?foe = phase3
+    equipR vigor sword
+    ?foe.armor > 0
+      equipL hammer
+    :
+      equipL poison sword

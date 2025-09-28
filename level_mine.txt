@@ -1,0 +1,49 @@
+var lc = import MyScripts/locheck
+var rsc = import MyScripts/resources
+var eq = import MyScripts/equips
+
+?lc.isMine()
+  ?hp < 10
+    activate potion
+  eq.equipWalk()
+  ?loc.stars <= 5
+    equipL triskelion
+  rsc.pickups()
+  rsc.harvests()
+
+  ?foe.distance < 30
+    ?foe = boss
+      equipBoss()
+    :
+      ?loc.stars <= 5
+        eq.equipSpeed()
+      :
+        eq.equipGeneral()
+
+  ?foe = boss
+    ?foe.state = 32
+      ?loc.stars > 5
+        ?foe.time = 25
+          equipR mind stone
+      :
+        ?foe.time = 25
+          equipR mind stone
+    :?foe.state = 4
+      eq.equipFarm()
+
+func equipBoss()
+  ?eq.isUsingSkill()
+    return
+  ?foe.state = 33
+    ?foe.distance > 7
+      equipR dashing shield
+    :?foe.armor > 0
+      equipR aether hammer
+      ?eq.canHeavyHammer()
+        eq.activateHeavyHammer()
+        return
+    :
+      equipR aether sword dU
+    equipL vigor sword dL
+  :
+    eq.equipBestSocketedCrossbow()

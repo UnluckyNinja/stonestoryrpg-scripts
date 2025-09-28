@@ -1,0 +1,33 @@
+var lc = import MyScripts/locheck
+var rsc = import MyScripts/resources
+var eq = import MyScripts/equips
+
+?lc.isCrypt()
+  ?hp < 10
+    activate potion
+  eq.equipWalk()
+  ?loc.stars <= 5
+    equipL triskelion
+  rsc.pickups()
+  rsc.harvests()
+
+  ?foe.distance < 23 
+    ?foe = boss | loc = boss
+      equipBoss()
+    :
+      ?loc.stars <= 5
+        eq.equipSpeed()
+      :
+        eq.equipGeneral()
+
+  ?foe = boss
+    ?foe.state = 4
+      eq.equipFarm()
+
+func equipBoss()
+  equipR vigor sword *5
+  equipL vigor sword *3
+  ?foe ! boss & foe.count >= 2
+    equipL long sword
+    equipL vigor long sword
+    equipR vigor wand
