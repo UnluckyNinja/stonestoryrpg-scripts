@@ -1,10 +1,10 @@
 var lc = import MyScripts/locheck
 var rsc = import MyScripts/resources
 var eq = import MyScripts/equips
+var pot = import MyScripts/potions
 
 ?lc.isCave()
-  ?hp < 10
-    activate potion
+  pot.usehealthPotion()
   eq.equipWalk()
   ?loc.stars <= 5
     equipL triskelion
@@ -21,22 +21,32 @@ var eq = import MyScripts/equips
         eq.equipGeneral()
 
   ?foe = boss
-    ?foe.state = 4
+    ?foe.state = 142 & item.GetCooldown("mind") <= 0
+      ?foe.time = 45
+        equipR mind stone
+    :?foe.state = 4
       eq.equipFarm()
 
 func equipBoss()
   ?eq.isUsingSkill()
     return
-  ?hp < maxhp
-    equipR vigor sword dL
-  :?foe.armor > 0
-    eq.equipBestHammer("R")
-  :
-    eq.equipBestSword("R")
-  equipL poison sword dP
+  ?foe.distance > 5 // get close
+    equipR dashing shield
+    equipL sword
+    return
   ?foe.distance < 9
     ?eq.tryAblities()
       return
+  ?foe.armor > 0
+    equipR hammer
+  :?foe.debuffs.string ! debuff_damage
+    equipR poison sword dP
+  :?foe.debuffs.string ! debuff_dot
+    equipR fire sword dF
   :
-    eq.equipSpeed()
-  // ?foe = phase2
+    equipR ice sword dI
+    
+  ?hp < maxhp
+    equipL vigor sword dL
+  :
+    equipL ice sword D

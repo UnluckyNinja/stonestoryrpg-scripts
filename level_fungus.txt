@@ -1,10 +1,10 @@
 var lc = import MyScripts/locheck
 var rsc = import MyScripts/resources
 var eq = import MyScripts/equips
+var pot = import MyScripts/potions
 
 ?lc.isFungus()
-  ?hp < 10
-    activate potion
+  pot.usehealthPotion()
   eq.equipWalk()
   ?loc.stars <= 5
     equipL triskelion
@@ -36,21 +36,28 @@ var eq = import MyScripts/equips
 func equipBoss()
   ?eq.isUsingSkill()
     return
+  ?eq.tryAblities()
+    return
   ?foe.armor > 0
-    eq.equipBestHammer("R")
-  :
-    eq.equipBestElement("R", "sword -long D")
-  ?hp < maxhp
-    equipL vigor sword dL
-  :
-    eq.equipBestSocketedCrossbow()
-    
+    equipR hammer
+  eq.equipLeech()
+  ?foe.state ! 32
+    eq.equipDash()
   ?foe = phase2
-    eq.equipBestSocketedCrossbow()
-    // eq.equipBestElement("L", "sword -long d")
-  ?foe.distance < 9
-    ?eq.tryAblities()
+    ?foe.count >= 2
+      eq.equipDebuffCrossbow()
       return
-  :
-    eq.equipSpeed()
+    ?foe.armor > 0
+      equipL aether hammer *5
+      equipR aether hammer *6
+    :
+      equipL vigor sword dL
+      equipR poison sword D
+    // eq.equipBestSocketedCrossbow()
+  //   // eq.equipBestElement("L", "sword -long d")
+  // ?foe.distance < 9
+  //   ?eq.tryAblities()
+  //     return
+  // :
+  //   eq.equipSpeed()
   // ?foe = phase2

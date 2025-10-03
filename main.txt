@@ -3,6 +3,11 @@ settings.enable_harvest = false
 settings.farm_mode = "none"
 settings.debug = true
 
+?time = 0
+  equipR compound shield
+  equipL quest
+  return
+
 import MyScripts/level_rocky
 import MyScripts/level_woods
 import MyScripts/level_caves
@@ -31,6 +36,8 @@ func debugLoc()
     >`0,2,@harvest@,@harvest.distance@,@harvest.z@
   ?pickup
     >`0,2,@pickup@,@pickup.distance@,@pickup.z@
+  >`0,3,@buffs.string@
+  >`0,4,@debuffs.string@
 
 func debugEnemy()
   ?foe
@@ -44,11 +51,13 @@ func debugEnemy()
     >`0,10,level: @foe.level@, @foe.hp@/@foe.maxhp@
 
 func debugItem()
-  >`0,11,Left:@item.left@
-  >`0,12,  State:@item.left.state@
-  >`0,13,  Time:@item.left.time@
-  >`0,14,Right:@item.right@
-  >`0,15,  State:@item.right.state@
-  >`0,16,  Time:@item.right.time@
-  >`0,17,Bardiche: @item.GetCooldown("bardiche")@
-  >`0,18,Heavy Hammer:@item.GetCooldown("heavy_hammer")@
+  >`0,1,Potion: @item.potion@
+  >`0,2,Left: @item.left@
+  >`0,3,  State: @item.left.state@
+  >`0,4,  Time: @item.left.time@
+  >`0,5,Right: @item.right@
+  >`0,6,  State: @item.right.state@
+  >`0,7,  Time: @item.right.time@
+  >`0,8,Bardiche: @item.GetCooldown("bardiche")@
+  >`0,9,Heavy Hammer: @item.GetCooldown("heavy_hammer")@
+  >`0,10,Mind Stone: @item.GetCooldown("mind")@

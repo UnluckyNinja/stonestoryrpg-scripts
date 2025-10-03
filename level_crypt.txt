@@ -1,10 +1,10 @@
 var lc = import MyScripts/locheck
 var rsc = import MyScripts/resources
 var eq = import MyScripts/equips
+var pot = import MyScripts/potions
 
 ?lc.isCrypt()
-  ?hp < 10
-    activate potion
+  pot.usehealthPotion()
   eq.equipWalk()
   ?loc.stars <= 5
     equipL triskelion
@@ -25,8 +25,8 @@ var eq = import MyScripts/equips
       eq.equipFarm()
 
 func equipBoss()
-  equipR vigor sword *5
-  equipL vigor sword *3
+  equipR long sword dL
+  equipL -long sword dL
   ?foe ! boss & foe.count >= 2
     equipL long sword
     equipL vigor long sword

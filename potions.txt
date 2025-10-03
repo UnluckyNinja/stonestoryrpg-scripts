@@ -1,0 +1,3 @@
+func usehealthPotion()
+  ?hp < 10 & item.potion = heal
+    activate potion

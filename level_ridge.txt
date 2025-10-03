@@ -1,10 +1,10 @@
 var lc = import MyScripts/locheck
 var rsc = import MyScripts/resources
 var eq = import MyScripts/equips
+var pot = import MyScripts/potions
 
 ?lc.isRidge()
-  ?hp < 10
-    activate potion
+  pot.usehealthPotion()
   eq.equipWalk()
   ?loc.stars <= 5
     equipL triskelion
@@ -16,7 +16,10 @@ var eq = import MyScripts/equips
       equipBoss()
     :
       ?foe = ice pillar
-        equipR aether long sword dU
+        ?foe.distance > 5
+          equipR dashing shield
+        :
+          equipR aether long sword dU
         equipL aether sword -long dU
       :
         ?loc.stars <= 5
@@ -40,6 +43,10 @@ var eq = import MyScripts/equips
       eq.equipFarm()
 
 func equipBoss()
+  ?eq.isUsingSkill()
+    return
+  ?foe = boss & (foe.distance < 9) & eq.tryAblities()
+    return
   ?loc.stars < 6
     ?foe = boss
       ?foe.distance > 5
@@ -75,16 +82,30 @@ func equipBoss()
         equipR dashing shield
         equipL sword
         return
-    :
-      equipR aether long sword dU
-      equipL aether -long sword dU
-      return
-      // ?true
-    ?foe.debuffs.string ! dot
-      equip fire socketed crossbow dF
-    :
-      equipR vigor shield ah
       ?hp < maxhp
-        equipL vigor sword dL -long
+        ?debuffs.string = chill
+          equipR shield ah
+        :
+          equipR sword dL +0
       :
-        equipL fire sword -long D
+        eq.equipDebuff()
+      eq.equipLeech()
+    :
+      ?foe.count > 2
+        equip socketed crossbow aether dU
+      :?foe.distance > 9
+        equipR dashing shield
+        equipL sword
+      :
+        ?foe.distance > 5
+          eq.staffDash()
+        ?hp < maxhp
+          ?debuffs.string = chill
+            equipR shield ah
+          :
+            equipR sword -long dL +0
+          equipL sword -long dL +6
+        :
+          equipR aether long sword dU
+          equipL aether -long sword dU
+      // ?true

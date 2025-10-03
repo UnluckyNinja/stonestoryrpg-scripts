@@ -1,10 +1,10 @@
 var lc = import MyScripts/locheck
 var rsc = import MyScripts/resources
 var eq = import MyScripts/equips
+var pot = import MyScripts/potions
 
 ?lc.isMine()
-  ?hp < 10
-    activate potion
+  pot.usehealthPotion()
   eq.equipWalk()
   ?loc.stars <= 5
     equipL triskelion
@@ -15,7 +15,10 @@ var eq = import MyScripts/equips
     ?foe = boss
       equipBoss()
     :
-      ?loc.stars <= 5
+      ?foe = mine_walker & foe.distance > 9
+        eq.equipDash()
+        equipL long sword
+      :?loc.stars <= 5
         eq.equipSpeed()
       :
         eq.equipGeneral()
@@ -23,7 +26,7 @@ var eq = import MyScripts/equips
   ?foe = boss
     ?foe.state = 32
       ?loc.stars > 5
-        ?foe.time = 25
+        ?foe.time = 32
           equipR mind stone
       :
         ?foe.time = 25
@@ -34,16 +37,18 @@ var eq = import MyScripts/equips
 func equipBoss()
   ?eq.isUsingSkill()
     return
+  ?foe = boss & (foe.distance < 9) & eq.tryAblities()
+    return
   ?foe.state = 33
     ?foe.distance > 7
+      eq.staffDash()
       equipR dashing shield
+      equipL vigor sword dL
     :?foe.armor > 0
-      equipR aether hammer
-      ?eq.canHeavyHammer()
-        eq.activateHeavyHammer()
-        return
+      equipR aether hammer D *6
+      equipL aether hammer D *5
     :
-      equipR aether sword dU
-    equipL vigor sword dL
+      equipR aether sword D -long
+      equipL aether sword dU -long
   :
-    eq.equipBestSocketedCrossbow()
+    equip aether socketed crossbow D

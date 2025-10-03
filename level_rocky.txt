@@ -1,12 +1,12 @@
 var lc = import MyScripts/locheck
 var rsc = import MyScripts/resources
 var eq = import MyScripts/equips
+var pot = import MyScripts/potions
 
 var attack_counter = 0
 
 ?lc.isRocky()
-  ?hp < 10
-    activate potion
+  pot.usehealthPotion()
   eq.equipWalk()
   rsc.pickups()
   rsc.harvests()

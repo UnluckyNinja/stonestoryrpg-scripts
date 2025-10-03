@@ -1,12 +1,12 @@
 var settings = import MyScripts/settings
 
 func pickups()
-  ?pickup.distance < 7
+  ?pickup.distance < 9
     equipL star
 
 func harvests()
   ?settings.enable_harvest
-    ?harvest.distance < 7
+    ?harvest.distance < 9
       ?harvest = Boulder
         equip shovel
       :

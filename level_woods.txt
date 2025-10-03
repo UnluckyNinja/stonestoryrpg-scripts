@@ -1,10 +1,10 @@
 var lc = import MyScripts/locheck
 var rsc = import MyScripts/resources
 var eq = import MyScripts/equips
+var pot = import MyScripts/potions
 
 ?lc.isWoods()
-  ?hp < 10
-    activate potion
+  pot.usehealthPotion()
   eq.equipWalk()
   ?loc.stars <= 5
     equipL triskelion
@@ -21,19 +21,40 @@ var eq = import MyScripts/equips
         eq.equipGeneral()
   ?foe = boss
     // ?foe = phase1
-      
     ?foe = phase2
       ?foe.state = 32
         ?foe.time = 35
-            equipR mind stone
+          //
+          >
+          // equipR mind stone
 
 func equipBoss()
+  ?eq.isUsingSkill()
+    return
   ?foe = phase1
-    ?foe.armor > 0
-      equipR hammer
-    :
-      equipR vigor sword
-      equipL poison sword
+    ?foe = boss & (foe.distance < 9) & eq.tryAblities()
+      return
+    ?foe = boss
+      ?foe.distance > 5 // get close
+        equipR dashing shield
+        equipL sword
+        return
+    eq.equipDebuff()
+    eq.equipLeech()
   :
-    equipR vigor sword
-    equipL poison sword
+    ?foe.distance > 5 // get close
+      equipR dashing shield
+      equipL sword
+      return
+    ?foe.buffs.string = "mirror"
+      equipR compound shield
+      equipL vigor long sword dL
+    :
+      ?foe = boss & (foe.distance < 9) & eq.tryAblities()
+        return
+      ?foe.state = 32 & foe.debuffs.string ! debuff_damage
+        equipR sword dP
+        equipL sword dL
+      :
+        equipR sword dI
+        equipL sword dL
